@@ -1,0 +1,134 @@
+{
+  "entities": {
+    "users": {
+      "title": "UserProfile",
+      "description": "Registered platform users including farmers, buyers, and administrators",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "phoneNumber": { "type": "string", "maxLength": 20 },
+        "role": { "type": "string", "enum": ["farmer", "buyer", "admin"] },
+        "buyerSubtype": { "type": "string", "enum": ["retailer", "institutional", "cooperative", "consumer"] },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "rejected", "under_review"] },
+        "state": { "type": "string", "maxLength": 50 },
+        "district": { "type": "string", "maxLength": 50 },
+        "pincode": { "type": "string", "maxLength": 10 },
+        "walletBalance": { "type": "number" },
+        "rating": { "type": "number" },
+        "totalRatingsCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "verificationStatus"]
+    },
+    "products": {
+      "title": "ProductListing",
+      "description": "Agricultural produce listed directly by verified farmers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "farmerId": { "type": "string", "maxLength": 128 },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "title": { "type": "string", "maxLength": 150 },
+        "cropName": { "type": "string", "maxLength": 80 },
+        "variety": { "type": "string", "maxLength": 80 },
+        "category": { "type": "string" },
+        "grade": { "type": "string" },
+        "availableQuantityKg": { "type": "number" },
+        "minimumOrderQuantityKg": { "type": "number" },
+        "pricePerKg": { "type": "number" },
+        "mandiBenchmarkPricePerKg": { "type": "number" },
+        "mspBenchmarkPricePerKg": { "type": "number" },
+        "isOrganic": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["active", "in_negotiation", "sold_out", "paused"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "farmerId", "title", "cropName", "category", "grade", "pricePerKg", "status"]
+    },
+    "orders": {
+      "title": "ProduceOrder",
+      "description": "Direct procurement orders placed by buyers for farmer produce with escrow protection",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "orderNumber": { "type": "string", "maxLength": 50 },
+        "farmerId": { "type": "string", "maxLength": 128 },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "buyerId": { "type": "string", "maxLength": 128 },
+        "buyerName": { "type": "string", "maxLength": 100 },
+        "buyerType": { "type": "string" },
+        "totalQuantityKg": { "type": "number" },
+        "itemsSubtotal": { "type": "number" },
+        "platformFee": { "type": "number" },
+        "transportationFee": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "traditionalMandiIntermediaryCut": { "type": "number" },
+        "status": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "deliveryDateEstimated": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "orderNumber", "farmerId", "buyerId", "totalAmount", "status", "paymentStatus"]
+    },
+    "fairPriceEngine": {
+      "title": "FairPriceData",
+      "description": "MSP and Mandi comparison data with FarmDirect recommended fair price band",
+      "type": "object",
+      "properties": {
+        "cropName": { "type": "string", "maxLength": 80 },
+        "variety": { "type": "string", "maxLength": 80 },
+        "state": { "type": "string", "maxLength": 50 },
+        "govMspPerKg": { "type": "number" },
+        "localMandiPricePerKg": { "type": "number" },
+        "farmDirectRecommendedPricePerKg": { "type": "number" },
+        "farmerMarginGainPercentage": { "type": "number" },
+        "buyerSavingsPercentage": { "type": "number" },
+        "priceTrend": { "type": "string" }
+      },
+      "required": ["cropName", "govMspPerKg", "localMandiPricePerKg", "farmDirectRecommendedPricePerKg"]
+    },
+    "logistics": {
+      "title": "LogisticsShipment",
+      "description": "Logistics dispatch and GPS tracking record for fulfilled farm orders",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "orderId": { "type": "string", "maxLength": 128 },
+        "carrierName": { "type": "string", "maxLength": 100 },
+        "vehicleType": { "type": "string" },
+        "originHub": { "type": "string" },
+        "destinationHub": { "type": "string" },
+        "temperatureControlled": { "type": "boolean" },
+        "status": { "type": "string" },
+        "estimatedDeliveryTime": { "type": "string" }
+      },
+      "required": ["id", "orderId", "carrierName", "vehicleType", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "Profile and role credentials for platform users"
+    },
+    "/products/{productId}": {
+      "schema": "products",
+      "description": "Agricultural produce listings available on the FarmDirect marketplace"
+    },
+    "/orders/{orderId}": {
+      "schema": "orders",
+      "description": "Procurement orders and contracts between farmers and buyers"
+    },
+    "/fair_prices/{priceId}": {
+      "schema": "fairPriceEngine",
+      "description": "Regional price discovery benchmarks and calculations"
+    },
+    "/logistics/{logisticsId}": {
+      "schema": "logistics",
+      "description": "Logistics tracking data and transit checkpoints"
+    }
+  }
+}
